@@ -16,14 +16,29 @@ public class Echoserver_ds {
     /**
      * @param args the command line arguments
      */
+    
+    //a function to help us get the current number of elements in an array
+    public static <T> int get_number_of_elements(T[] arr){
+        int count = 0;
+        for(T el : arr)
+            if (el != null)
+                ++count;
+        return count;
+        }
+    
     public static void main(String[] args) {
         
-        try
-        {
-            //1.Listen 
+        try{
+            //Making the array of users
+            User[] Users = new User[1000]; //created an array of Users
+            //no need to import the User class before using it, because it is in the same package
+            int next_empty_index=0; //refers to the array index to which we will add a new user
+            int current_user_index=0; //refers to the index of the user who is logged in now
+
+            //1.Listen to any client that may arrive
             ServerSocket s = new ServerSocket(1234);
             
-            while (true) //because the server is always waiting
+            while (true) //because the server is always waiting for a new client
             {
                 //2.accept
                 Socket c = s.accept();
@@ -33,15 +48,43 @@ public class Echoserver_ds {
                 DataOutputStream dos = new DataOutputStream(c.getOutputStream());
                 DataInputStream dis = new DataInputStream(c.getInputStream());
 
-                //4.IO communication with client
+                //4.IO communication with client (main program)
+                
                 while (true)
                 {
-                    String clientmsg = dis.readUTF();
-                    dos.writeUTF("Server Says:" + clientmsg);
-                    if (clientmsg.equalsIgnoreCase("bye"))
-                    {
-                        break;
+                    dos.writeUTF("Enter your full name: ");
+                    String full_name = dis.readUTF();
+                    
+                    dos.writeUTF("Enter a password ");
+                    String password = dis.readUTF();
+                    
+                    dos.writeUTF("Enter an initial balance ");
+                    int initial_balance = Integer.parseInt(dis.readUTF()); //converted string to number
+                    
+                    User new_user=new User(full_name, password, initial_balance);
+                    Users[next_empty_index]=new_user;
+                    
+                    next_empty_index++; //to be able to create the next user in the future
+
+                    current_user_index=next_empty_index-1;
+                    
+                    dos.writeUTF("Here is your account info: Full Name: " + Users[userIndex].full_name +
+                            " Password: " + Users[userIndex].password + " Balance: "+ Users[userIndex].balance + " ID: " + Users[userIndex].id);
+                    
+                    
+                    int number_of_users=get_number_of_elements(Users);
+                    dos.writeUTF("number of users now are: "+ number_of_users);
+                                        
+                    System.out.println("Now, we have "+number_of_users+" users");
+                    for (int i = 0; i < number_of_users; i++){
+                        System.out.println(Users[i].full_name+"\n");
+                        System.out.println(Users[i].id+"\n");
                     }
+                    
+                    
+                    String userChoice = dis.readUTF();
+                    if(userChoice.equalsIgnoreCase("N"))
+                        break;
                 }
 
                 //5. close comm with client
