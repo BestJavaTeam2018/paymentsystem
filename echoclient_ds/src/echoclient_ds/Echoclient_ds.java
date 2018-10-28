@@ -39,7 +39,7 @@ public class Echoclient_ds {
                 System.out.println(servermsg);
                 String userresp = sc.nextLine();
                 dos.writeUTF(userresp);
-                if(userresp.equalsIgnoreCase("N"))
+                if(userresp.equalsIgnoreCase("E"))
                     break;
             }
 

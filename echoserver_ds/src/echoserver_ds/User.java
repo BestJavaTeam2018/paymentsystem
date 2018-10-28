@@ -8,7 +8,7 @@ import java.util.Random;
 
 public class User {
     String full_name;
-    Number id;
+    String id;
     String password;
     Number balance;
     
@@ -20,7 +20,7 @@ public class User {
         
         //creating a random id
         Random rand = new Random();
-        id= rand.nextInt(10000) + 1;
+        id= Integer.toString(rand.nextInt(10000) + 1);
     }
     
 }

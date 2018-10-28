@@ -52,39 +52,130 @@ public class Echoserver_ds {
                 
                 while (true)
                 {
-                    dos.writeUTF("Enter your full name: ");
-                    String full_name = dis.readUTF();
+                    dos.writeUTF("To make a new account, press C."
+                            + "\n To login, press L "
+                            + "\n To get information about our bank, press I"
+                            + "\n To exit, press E \n");
                     
-                    dos.writeUTF("Enter a password ");
-                    String password = dis.readUTF();
+                    String userFirstChoice = dis.readUTF();
                     
-                    dos.writeUTF("Enter an initial balance ");
-                    int initial_balance = Integer.parseInt(dis.readUTF()); //converted string to number
+                    //------------------------------------------CREATE NEW ACCOUNT---------------------------------------------------
                     
-                    User new_user=new User(full_name, password, initial_balance);
-                    Users[next_empty_index]=new_user;
-                    
-                    next_empty_index++; //to be able to create the next user in the future
+                    if(userFirstChoice.equalsIgnoreCase("C")){
+                        dos.writeUTF("Enter your full name: ");
+                        String full_name = dis.readUTF();
 
-                    current_user_index=next_empty_index-1;
-                    
-                    dos.writeUTF("Here is your account info: Full Name: " + Users[userIndex].full_name +
-                            " Password: " + Users[userIndex].password + " Balance: "+ Users[userIndex].balance + " ID: " + Users[userIndex].id);
-                    
-                    
-                    int number_of_users=get_number_of_elements(Users);
-                    dos.writeUTF("number of users now are: "+ number_of_users);
-                                        
-                    System.out.println("Now, we have "+number_of_users+" users");
-                    for (int i = 0; i < number_of_users; i++){
-                        System.out.println(Users[i].full_name+"\n");
-                        System.out.println(Users[i].id+"\n");
-                    }
-                    
-                    
-                    String userChoice = dis.readUTF();
-                    if(userChoice.equalsIgnoreCase("N"))
+                        dos.writeUTF("Enter a password ");
+                        String password = dis.readUTF();
+
+                        dos.writeUTF("Enter an initial balance ");
+                        int initial_balance = Integer.parseInt(dis.readUTF()); //converted string to number
+
+                        User new_user=new User(full_name, password, initial_balance);
+                        Users[next_empty_index]=new_user;
+
+                        next_empty_index++; //to be able to create the next user in the future
+
+                        current_user_index=next_empty_index-1;
+
+                        dos.writeUTF("Congratulations! Here is your account info: Full Name: " + Users[current_user_index].full_name +
+                                "\n Password: " + Users[current_user_index].password + "\n Balance: "+ Users[current_user_index].balance + "\n ID: " + Users[current_user_index].id
+                                +"\nPress enter to continue\n");
+                        
+                        dis.readUTF(); //to absorb the user's enter press
+                        
+                     //------------------------------------------LOGIN---------------------------------------------------
+                                    
+                     } else if(userFirstChoice.equalsIgnoreCase("L")){
+                         
+                        boolean login_success=false;
+                         
+                        dos.writeUTF("Enter your ID: ");
+                        String id = dis.readUTF();
+
+                        dos.writeUTF("Enter your password ");
+                        String password = dis.readUTF();
+                        
+                        int number_of_users=get_number_of_elements(Users);
+
+                        for (int i = 0; i < number_of_users; i++){
+                            
+                            System.out.println(id);
+                            System.out.println(password);
+                            System.out.println(Users[i].id);
+                            System.out.println(Users[i].password);
+                            
+                            if(Users[i].id.equals(id)&& Users[i].password.equals(password)){
+                                login_success=true;
+                                current_user_index=i;
+                                break;
+                            }
+                        }
+                        
+                        if(login_success==true){
+                            
+                            while(true){
+                                dos.writeUTF("Welcome to your account: Full Name: " + Users[current_user_index].full_name +
+                                "\n Type details for your account details \n Type D to deposit an amount \n \n Type W to withdraw an amount \n"
+                                +"\nPress L to logout\n");
+                            
+                                 //-------------------------------------------LOGGED IN ACCOUNT DETAILS------------------------------------------------------
+                                if(userFirstChoice.equalsIgnoreCase("details")){
+                                    
+                                    dos.writeUTF("Full Name: " + Users[current_user_index].full_name +
+                                    "\n Password: " + Users[current_user_index].password + "\n Balance: "+ Users[current_user_index].balance + "\n ID: " + Users[current_user_index].id
+                                    +"\nPress enter to continue\n");
+
+                                 //-------------------------------------------LOGGED IN ACCOUNT DEPOSIT------------------------------------------------------
+                                } else if(userFirstChoice.equalsIgnoreCase("D")){
+
+                                    
+                                    
+                                 //-------------------------------------------LOGGED IN ACCOUNT WITHDRAWAL------------------------------------------------------
+                                } else if(userFirstChoice.equalsIgnoreCase("W")){
+
+                                    
+                                    
+                                //-------------------------------------------LOGGED IN ACCOUNT LOGOUT------------------------------------------------------
+                                } else if(userFirstChoice.equalsIgnoreCase("L")){
+                                    dos.writeUTF("Logged out successfully, press enter");
+                                    break;
+                                }
+                            }
+                            
+                            
+                        }else {
+                            dos.writeUTF("Sorry, wrong ID or password, press enter to try again");
+                        }
+                        
+                        dis.readUTF(); //to absorb the user's enter press
+
+                     //------------------------------------------GET BANK INFORMATION---------------------------------------------------
+
+                    } else if(userFirstChoice.equalsIgnoreCase("I")){
+                        int number_of_users=get_number_of_elements(Users);
+
+                        if(number_of_users==0){
+                           dos.writeUTF("Now, we have "+number_of_users+" users"
+                                   + "\n Press enter to continue");
+                        } else {
+                            dos.writeUTF("Now, we have "+number_of_users+" users " + " Press Enter to see more info about them");
+                            dis.readUTF();
+                            String users="";
+                            for (int i = 0; i < number_of_users; i++){
+                                users=users+"\n"+Users[i].full_name+"\n"
+                                        + Users[i].id;
+                            }
+                            dos.writeUTF(users+"\n \n Press enter to continue");
+                        }
+                        
+                        dis.readUTF(); //to absorb the user's enter press
+
+                    //------------------------------------------EXIT---------------------------------------------------
+
+                    }else if(userFirstChoice.equalsIgnoreCase("E")){
                         break;
+                    }
                 }
 
                 //5. close comm with client
