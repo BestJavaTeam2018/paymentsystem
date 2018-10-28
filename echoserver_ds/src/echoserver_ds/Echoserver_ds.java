@@ -20,21 +20,35 @@ public class Echoserver_ds {
         
         try
         {
-            //1. Listen
+            //1.Listen 
             ServerSocket s = new ServerSocket(1234);
-            //2. Accept
-            Socket c = s.accept();
-            //3. Create socket (I/O) with client
-            DataOutputStream dos=new DataOutputStream(c.getOutputStream());
-            DataInputStream dis = new DataInputStream(c.getInputStream());
             
-            //4. Perform main operations with client
-            
-            
-            //5. Close communication with client
-            dos.close();
-            dis.close();
-            c.close();
+            while (true) //because the server is always waiting
+            {
+                //2.accept
+                Socket c = s.accept();
+                System.out.println("Client Arrived");
+                
+                //3.create socket (I/O) with client
+                DataOutputStream dos = new DataOutputStream(c.getOutputStream());
+                DataInputStream dis = new DataInputStream(c.getInputStream());
+
+                //4.IO communication with client
+                while (true)
+                {
+                    String clientmsg = dis.readUTF();
+                    dos.writeUTF("Server Says:" + clientmsg);
+                    if (clientmsg.equalsIgnoreCase("bye"))
+                    {
+                        break;
+                    }
+                }
+
+                //5. close comm with client
+                dos.close();
+                dis.close();
+                c.close();
+            }
             
         } catch(IOException ex)
         {
