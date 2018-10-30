@@ -16,7 +16,7 @@ public class Echoserver_ds {
     /**
      * @param args the command line arguments
      */
-    
+
     //a function to help us get the current number of elements in an array
     public static <T> int get_number_of_elements(T[] arr){
         int count = 0;
@@ -25,9 +25,9 @@ public class Echoserver_ds {
                 ++count;
         return count;
         }
-    
+
     public static void main(String[] args) {
-        
+
         try{
             //Making the array of users
             User[] Users = new User[1000]; //created an array of Users
@@ -37,30 +37,30 @@ public class Echoserver_ds {
 
             //1.Listen to any client that may arrive
             ServerSocket s = new ServerSocket(1234);
-            
+
             while (true) //because the server is always waiting for a new client
             {
                 //2.accept
                 Socket c = s.accept();
                 System.out.println("Client Arrived");
-                
+
                 //3.create socket (I/O) with client
                 DataOutputStream dos = new DataOutputStream(c.getOutputStream());
                 DataInputStream dis = new DataInputStream(c.getInputStream());
 
                 //4.IO communication with client (main program)
-                
+
                 while (true)
                 {
                     dos.writeUTF("To make a new account, press C."
                             + "\n To login, press L "
                             + "\n To get information about our bank, press I"
                             + "\n To exit, press E \n");
-                    
+
                     String userFirstChoice = dis.readUTF();
-                    
+
                     //------------------------------------------CREATE NEW ACCOUNT---------------------------------------------------
-                    
+
                     if(userFirstChoice.equalsIgnoreCase("C")){
                         dos.writeUTF("Enter your full name: ");
                         String full_name = dis.readUTF();
@@ -81,47 +81,49 @@ public class Echoserver_ds {
                         dos.writeUTF("Congratulations! Here is your account info: Full Name: " + Users[current_user_index].full_name +
                                 "\n Password: " + Users[current_user_index].password + "\n Balance: "+ Users[current_user_index].balance + "\n ID: " + Users[current_user_index].id
                                 +"\nPress enter to continue\n");
-                        
+
                         dis.readUTF(); //to absorb the user's enter press
-                        
+
                      //------------------------------------------LOGIN---------------------------------------------------
-                                    
+
                      } else if(userFirstChoice.equalsIgnoreCase("L")){
-                         
+
                         boolean login_success=false;
-                         
+
                         dos.writeUTF("Enter your ID: ");
                         String id = dis.readUTF();
 
                         dos.writeUTF("Enter your password ");
                         String password = dis.readUTF();
-                        
+
                         int number_of_users=get_number_of_elements(Users);
 
                         for (int i = 0; i < number_of_users; i++){
-                            
+
                             System.out.println(id);
                             System.out.println(password);
                             System.out.println(Users[i].id);
                             System.out.println(Users[i].password);
-                            
+
                             if(Users[i].id.equals(id)&& Users[i].password.equals(password)){
                                 login_success=true;
                                 current_user_index=i;
                                 break;
                             }
                         }
-                        
+
                         if(login_success==true){
-                            
+
                             while(true){
                                 dos.writeUTF("Welcome to your account: Full Name: " + Users[current_user_index].full_name +
                                 "\n Type details for your account details \n Type D to deposit an amount \n \n Type W to withdraw an amount \n"
-                                +"\nPress L to logout\n");
-                            
+                                +"Type T to transfer money to another account in the same bank"
+                                        + "\nPress L to logout\n");
+                                userFirstChoice=dis.readUTF() ;
+
                                  //-------------------------------------------LOGGED IN ACCOUNT DETAILS------------------------------------------------------
                                 if(userFirstChoice.equalsIgnoreCase("details")){
-                                    
+
                                     dos.writeUTF("Full Name: " + Users[current_user_index].full_name +
                                     "\n Password: " + Users[current_user_index].password + "\n Balance: "+ Users[current_user_index].balance + "\n ID: " + Users[current_user_index].id
                                     +"\nPress enter to continue\n");
@@ -129,25 +131,37 @@ public class Echoserver_ds {
                                  //-------------------------------------------LOGGED IN ACCOUNT DEPOSIT------------------------------------------------------
                                 } else if(userFirstChoice.equalsIgnoreCase("D")){
 
-                                    
-                                    
+
+
                                  //-------------------------------------------LOGGED IN ACCOUNT WITHDRAWAL------------------------------------------------------
                                 } else if(userFirstChoice.equalsIgnoreCase("W")){
 
-                                    
-                                    
+
+
+                                //-------------------------------------------LOGGED IN ACCOUNT WITHDRAWAL------------------------------------------------------
+                               } else if(userFirstChoice.equalsIgnoreCase("T")){
+                                    dos.writeUTF("please write the id of the user you want to tansfer money to ");
+                                    String idOfSecondUser=dis.readUTF();
+                                    System.out.println(idOfSecondUser);
+                                    dos.writeUTF("please write the amount of money you want to transfer");
+                                    Number amountOfMoney =Float.parseFloat(dis.readUTF()); 
+                                    System.out.println(amountOfMoney);  
+                                    //Users[current_user_index].transfer(idOfSecondUser);
+
+
                                 //-------------------------------------------LOGGED IN ACCOUNT LOGOUT------------------------------------------------------
                                 } else if(userFirstChoice.equalsIgnoreCase("L")){
                                     dos.writeUTF("Logged out successfully, press enter");
                                     break;
                                 }
-                            }
-                            
-                            
-                        }else {
+                            }//end of while
+
+
+                        }//end of if
+                        else {
                             dos.writeUTF("Sorry, wrong ID or password, press enter to try again");
                         }
-                        
+
                         dis.readUTF(); //to absorb the user's enter press
 
                      //------------------------------------------GET BANK INFORMATION---------------------------------------------------
@@ -168,7 +182,7 @@ public class Echoserver_ds {
                             }
                             dos.writeUTF(users+"\n \n Press enter to continue");
                         }
-                        
+
                         dis.readUTF(); //to absorb the user's enter press
 
                     //------------------------------------------EXIT---------------------------------------------------
@@ -183,13 +197,13 @@ public class Echoserver_ds {
                 dis.close();
                 c.close();
             }
-            
+
         } catch(IOException ex)
         {
             System.out.println("An error has occured" );
         }
-        
-        
+
+
     }
-    
+
 }

@@ -11,6 +11,7 @@ public class User {
     String id;
     String password;
     Number balance;
+        
     
     //constructor
     User(String Full_Name, String Password, Number Initial_Balance){
