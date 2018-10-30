@@ -142,11 +142,9 @@ public class Echoserver_ds {
                                } else if(userFirstChoice.equalsIgnoreCase("T")){
                                     dos.writeUTF("please write the id of the user you want to tansfer money to ");
                                     String idOfSecondUser=dis.readUTF();
-                                    System.out.println(idOfSecondUser);
                                     dos.writeUTF("please write the amount of money you want to transfer");
                                     Number amountOfMoney =Float.parseFloat(dis.readUTF()); 
-                                    System.out.println(amountOfMoney);  
-                                    //Users[current_user_index].transfer(idOfSecondUser);
+                              
 
 
                                 //-------------------------------------------LOGGED IN ACCOUNT LOGOUT------------------------------------------------------
