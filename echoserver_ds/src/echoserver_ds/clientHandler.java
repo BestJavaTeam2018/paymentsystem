@@ -130,14 +130,20 @@ public class clientHandler extends Thread {
                                 //-------------------------------------------LOGGED IN ACCOUNT DEPOSIT------------------------------------------------------
                             } else if(userFirstChoice.equalsIgnoreCase("D")){
 
-
+                                dos.writeUTF("Enter the Amount to be deposited.");
+                                Number deposited_amount = Float.parseFloat(dis.readUTF());
+                                Users[current_user_index].balance = Users[current_user_index].balance.floatValue() + deposited_amount.floatValue();
+                                dos.writeUTF("your new balance is: " + Users[current_user_index].balance + " \n press enter to continue.");
 
                              //-------------------------------------------LOGGED IN ACCOUNT WITHDRAWAL------------------------------------------------------
                             } else if(userFirstChoice.equalsIgnoreCase("W")){
 
-
-
-                            //-------------------------------------------LOGGED IN ACCOUNT WITHDRAWAL------------------------------------------------------
+                                dos.writeUTF("Enter the Amount to be withdrawn.");
+                                Number withdrawn_amount = Float.parseFloat(dis.readUTF());
+                                Users[current_user_index].balance = Users[current_user_index].balance.floatValue() - withdrawn_amount.floatValue();
+                                dos.writeUTF("your new balance is: " + Users[current_user_index].balance + " \n press enter to continue.");
+                                   
+                            //-------------------------------------------LOGGED IN ACCOUNT TRASFER------------------------------------------------------
                            } else if(userFirstChoice.equalsIgnoreCase("TS")){
                                String idOfSecondUser="";
                                try{
