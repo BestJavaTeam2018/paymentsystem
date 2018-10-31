@@ -112,8 +112,8 @@ public class clientHandler extends Thread {
                     if(login_success==true){
 
                         while(true){
-                            dos.writeUTF("Welcome to your account: Full Name: " + Users[current_user_index].full_name +
-                            "\n Type details for your account details \n Type D to deposit an amount \n \n Type W to withdraw an amount \n"
+                            dos.writeUTF("\nWelcome to your account: Full Name: " + Users[current_user_index].full_name +
+                            "\n Type details for your account details \nType D to deposit an amount \n\nType W to withdraw an amount \n"
                             +"Type TS to transfer money to another account in the same bank"
                                     + "\nPress L to logout\n");
 
