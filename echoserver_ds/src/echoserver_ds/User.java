@@ -27,24 +27,30 @@ public class User {
     
     //user can transfer money to another account in the same bank
     public String Transfer(String idOfSecondUser,Number amountOfMoney,User[] users){
-        if (this.balance.floatValue()>=amountOfMoney.floatValue()){
-            boolean user_is_founded=false;
-            this.balance=this.balance.floatValue()-amountOfMoney.floatValue();
-             int number_of_users=get_number_of_elements(users);
-            for (int i=0;i<number_of_users; i++){
+        //balance is enough
+        if (balance.floatValue()>=amountOfMoney.floatValue()){
+           boolean user_is_founded=false;
+           int number_of_users=get_number_of_elements(users);
+           for (int i=0;i<number_of_users; i++){
+                  //find the id and do the transfer  
                   if(users[i].id.equals(idOfSecondUser)){
-                                users[i].balance=users[i].balance.floatValue()+amountOfMoney.floatValue();
-                                user_is_founded=true;
-                                break;
-                            }
-            }
+                        user_is_founded=true;
+                        balance=balance.floatValue()-amountOfMoney.floatValue();
+                        users[i].balance=users[i].balance.floatValue()+amountOfMoney.floatValue();
+                       } //end of finding the id if condition 
+            } //end of for loop
+            //user is founded successfully
             if(user_is_founded)
-                return "Money is transferred successfully to the user you specified ,your balance now is"
-                        + this.balance.floatValue();
+            {
+                return "Money is transferred successfully to th"
+                      + "e user you specified ,your balance now is "
+                      + this.balance.floatValue();
+            }  
             else
                 return "Unfortunately, No user of such id is founded ";
+        }//end of balance check if condition
         //if balance is not enough
-        }else {
+        else {
             return "Unfortunately, your balance is not enough";
         }
     }
