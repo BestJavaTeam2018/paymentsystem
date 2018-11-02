@@ -80,7 +80,7 @@ public class User {
         {
            //creating socket with the other bank...
         // Scanner sc = new Scanner(System.in);
-        Socket s =new Socket("127.0.0.1",5678); 
+        Socket s =new Socket("127.0.0.1",1234); 
                  
         DataOutputStream dos = new DataOutputStream(s.getOutputStream());
         DataInputStream dis = new DataInputStream(s.getInputStream());

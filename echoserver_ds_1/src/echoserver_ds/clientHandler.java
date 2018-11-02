@@ -53,12 +53,13 @@ public class clientHandler extends Thread {
             int targetClientIndex=0;//the id of the client that will receive money from another bank
          while (true)
             {
-                     dos.writeUTF("To make a new account, press C."
+                 dos.writeUTF("To make a new account, press C."
                         + "\n To login, press L "
                         + "\n To get information about our bank, press I"
                         + "\n To exit, press E \n");
+                 
                 String userFirstChoice = dis.readUTF();
-                              if (userFirstChoice.equalsIgnoreCase("sending id")){
+                 if (userFirstChoice.equalsIgnoreCase("sending id")){
                         dos.writeUTF("ok");
                         userFirstChoice=dis.readUTF();
                         System.out.println(userFirstChoice);
@@ -91,11 +92,11 @@ public class clientHandler extends Thread {
                         }
                      
                         }
+                  
                       
                 
                 
-
-
+   
                 
                 
                 //------------------------------------------CREATE NEW ACCOUNT---------------------------------------------------
@@ -290,4 +291,3 @@ public class clientHandler extends Thread {
 
     
 }
-
