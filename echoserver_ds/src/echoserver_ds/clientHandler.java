@@ -6,11 +6,14 @@
 package echoserver_ds;
 
 import static echoserver_ds.Echoserver_ds.get_number_of_elements;
+import static echoserver_ds.Transaction.count;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -22,15 +25,19 @@ public class clientHandler extends Thread {
     Socket c;
     //volatile to make change visible to all threads  
     volatile User[] Users ;
+    volatile Transaction[] transactions;
     //only one shared next_empty_index
     AtomicInteger  next_empty_index; //refers to the array index to which we will add a new user
     int current_user_index;
+    AtomicInteger next_transaction_index;
 
-    public clientHandler(Socket c,User[] Users,AtomicInteger next_empty_index,Integer current_user_index) {
+    public clientHandler(Socket c,User[] Users,Transaction[] Transactions,AtomicInteger next_empty_index,Integer current_user_index,AtomicInteger next_transaction_index) {
         this.c = c;
         this.Users=Users;
+        this.transactions = Transactions ;
         this.next_empty_index=next_empty_index;
         this.current_user_index=current_user_index;
+        this.next_transaction_index=next_transaction_index;
         
     }
     
@@ -41,7 +48,11 @@ public class clientHandler extends Thread {
          next_empty_index.addAndGet(1); //to be able to create the next user in the future
          current_user_index=next_empty_index.get()-1;
     }  
-
+    public synchronized void newTransaction(String User_id,String Type, Number Amount){
+    Transaction new_transaction = new Transaction(User_id,Type,Amount);
+    transactions[next_transaction_index.get()]=new_transaction ;
+    next_transaction_index.addAndGet(1);
+}
   @Override
     public void run() {
         try{
@@ -153,7 +164,7 @@ public class clientHandler extends Thread {
                         while(true){
                               dos.writeUTF("\nWelcome to your account: Full Name: " + Users[current_user_index].full_name +
                             "\n Type details for your account details \nType D to deposit an amount \nType W to withdraw an amount \n"
-                            +"Type TS to transfer money to another account in the same bank\n"+"Type TS+ to transfer money to another account in other bank"
+                            +"Type TS to transfer money to another account in the same bank\n"+"Type TS+ to transfer money to another account in other bank"+"\nType H to see your transactions history"
                                     + "\nPress L to logout\n");
 
                             // to take the choice of the user after log in
@@ -172,6 +183,7 @@ public class clientHandler extends Thread {
                                 dos.writeUTF("Enter the Amount to be deposited.");
                                 Number deposited_amount = Float.parseFloat(dis.readUTF());
                                 Users[current_user_index].balance = Users[current_user_index].balance.floatValue() + deposited_amount.floatValue();
+                                newTransaction(Users[current_user_index].id,"Deposit",deposited_amount);
                                 dos.writeUTF("your new balance is: " + Users[current_user_index].balance + " \n press enter to continue.");
 
                              //-------------------------------------------LOGGED IN ACCOUNT WITHDRAWAL------------------------------------------------------
@@ -180,6 +192,7 @@ public class clientHandler extends Thread {
                                 dos.writeUTF("Enter the Amount to be withdrawn.");
                                 Number withdrawn_amount = Float.parseFloat(dis.readUTF());
                                 Users[current_user_index].balance = Users[current_user_index].balance.floatValue() - withdrawn_amount.floatValue();
+                                newTransaction(Users[current_user_index].id,"Withdraw",withdrawn_amount);
                                 dos.writeUTF("your new balance is: " + Users[current_user_index].balance + " \n press enter to continue.");
                                    
                             //-------------------------------------------LOGGED IN ACCOUNT TRASFER------------------------------------------------------
@@ -200,6 +213,8 @@ public class clientHandler extends Thread {
                                        how successful the transfer was
                                       */
                                       String state=Users[current_user_index].Transfer(idOfSecondUser,amountOfMoney,Users);
+                                      newTransaction(Users[current_user_index].id,"Transfer",amountOfMoney);
+                                      
                                       dos.writeUTF(state+" press enter to continue");
                                 }
                                catch (Exception e){
@@ -226,13 +241,31 @@ public class clientHandler extends Thread {
                                        float  amount =Float.parseFloat(dis.readUTF());
                                        
                                         String response=Users[current_user_index].TramsferToAnotherBank(idOfClient,amount);
+                                        newTransaction(Users[current_user_index].id,"Transfer",amount);
                                     dos.writeUTF(response+"\npress Enter to continue");
                                        }
                                        catch (Exception e) {
                                        dos.writeUTF("something went wrong\npress Enter to continue");
                                        }
                                        }
-                           
+                            //-------------------------------------------LOGGED IN ACCOUNT TRANSACTION HISTORY------------------------------------------------------
+                             else if(userFirstChoice.equalsIgnoreCase("H")){
+                                 boolean flag = false;
+                                 String trs= new String("");
+                                 for (int i = 0; i < next_transaction_index.get(); i++){
+                                if(transactions[i].user_id.equals(Users[current_user_index].id)){                        
+                                 trs=trs+("Transaction_id: "+transactions[i].id+" "+transactions[i].date+" type: "+transactions[i].type+" amount: "+transactions[i].amount+"\n");      
+                                flag=true;
+                            }
+                            }
+                                 if (!flag)
+                                    trs=("no transactions yet"+"\n press enter to continue");
+                                 dos.writeUTF(trs+"\npress enter to continue");
+                             
+                             
+                                
+                                   
+                           }
                            else if(userFirstChoice.equalsIgnoreCase("L")){
                                 dos.writeUTF("Logged out successfully, press enter");
                                 break;

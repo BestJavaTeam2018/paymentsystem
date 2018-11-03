@@ -36,7 +36,9 @@ public class Echoserver_ds {
             //atomic integer means we only have one shared value of it between all threads 
             AtomicInteger next_empty_index=new AtomicInteger(0); //refers to the array index to which we will add a new user
             int current_user_index=0; //refers to the index of the user who is logged in now
-
+            Transaction[] transactions = new Transaction[10000] ;
+            AtomicInteger next_transaction_index=new AtomicInteger(0);
+            
             //1.Listen to any client that may arrive
             ServerSocket s = new ServerSocket(1234);
 
@@ -45,7 +47,7 @@ public class Echoserver_ds {
                 //2.accept
                 Socket c = s.accept();
                 System.out.println("Client Arrived");
-                clientHandler ch =  new clientHandler(c,Users,next_empty_index,current_user_index);
+                clientHandler ch =  new clientHandler(c,Users,transactions,next_empty_index,current_user_index,next_transaction_index);
                 ch.start();
 
                

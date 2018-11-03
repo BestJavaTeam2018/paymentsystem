@@ -30,6 +30,8 @@ amount = Amount;
 date = new Date();
 count++;
 Random rand= new Random();
-id = rand.nextInt(10*count)+((count-1)*10)+1 ;
+int high = 100000*count;
+int low = 100000*(count-1);
+id = rand.nextInt(high-low)+low ;
 }
 }
