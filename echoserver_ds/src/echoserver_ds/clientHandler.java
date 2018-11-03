@@ -316,7 +316,7 @@ public class clientHandler extends Thread {
         }
         catch(IOException ex)
         {
-            System.out.println("Something went wrong with the client" );
+            System.out.println("Client socket closed");
         }
         
 }
