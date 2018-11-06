@@ -61,7 +61,7 @@ public class User {
            if(amountOfMoney.floatValue()<0)
               return "Unfortunately, you can't transfer negative number";
            else
-            return "Unfortunately, your balance is not enough";
+              return "Unfortunately, your balance is not enough";
         }
     }
     private boolean isOkToTransfer(Number amount)
