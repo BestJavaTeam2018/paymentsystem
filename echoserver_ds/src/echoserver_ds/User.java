@@ -35,7 +35,7 @@ public class User {
     //user can transfer money to another account in the same bank
     public String Transfer(String idOfSecondUser,Number amountOfMoney,User[] users){
         //balance is enough
-        if (balance.floatValue()>=amountOfMoney.floatValue()){
+        if (balance.floatValue()>=amountOfMoney.floatValue()&&amountOfMoney.floatValue()>=0){
            boolean user_is_founded=false;
            int number_of_users=get_number_of_elements(users);
            for (int i=0;i<number_of_users; i++){
@@ -58,6 +58,9 @@ public class User {
         }//end of balance check if condition
         //if balance is not enough
         else {
+           if(amountOfMoney.floatValue()<0)
+              return "Unfortunately, you can't transfer negative number";
+           else
             return "Unfortunately, your balance is not enough";
         }
     }
