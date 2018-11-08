@@ -2,6 +2,16 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
+<<<<<<< HEAD
         <group/>
+||||||| merged common ancestors
+        <group>
+            <file>file:/home/muhammad/paymentsystem/echoclient_ds/src/echoclient_ds/Echoclient_ds.java</file>
+        </group>
+=======
+        <group>
+            <file>file:/C:/Users/ahmed/Documents/NetBeansProjects/paymentsystem/echoclient_ds/src/echoclient_ds/Echoclient_ds.java</file>
+        </group>
+>>>>>>> ef0d2a9751258c29a736cc4d0ca382e2fab5cb17
     </open-files>
 </project-private>

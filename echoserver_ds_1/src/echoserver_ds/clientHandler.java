@@ -31,7 +31,7 @@ public class clientHandler extends Thread {
     int current_user_index;
     AtomicInteger next_transaction_index;
 
-    public clientHandler(Socket c,User[] Users,Transaction[] Transactions,AtomicInteger next_empty_index,Integer current_user_index,AtomicInteger next_transaction_index) {
+     public clientHandler(Socket c,User[] Users,Transaction[] Transactions,AtomicInteger next_empty_index,Integer current_user_index,AtomicInteger next_transaction_index) {
         this.c = c;
         this.Users=Users;
         this.transactions = Transactions ;
@@ -41,6 +41,7 @@ public class clientHandler extends Thread {
         
     }
     
+    
     public synchronized void newUser(String full_name, String password, int initial_balance){
          User new_user=new User(full_name, password, initial_balance);
          Users[next_empty_index.get()]=new_user;
@@ -48,7 +49,7 @@ public class clientHandler extends Thread {
          next_empty_index.addAndGet(1); //to be able to create the next user in the future
          current_user_index=next_empty_index.get()-1;
     }  
-    public synchronized void newTransaction(String User_id,String Type, Number Amount){
+ public synchronized void newTransaction(String User_id,String Type, Number Amount){
     Transaction new_transaction = new Transaction(User_id,Type,Amount);
     transactions[next_transaction_index.get()]=new_transaction ;
     next_transaction_index.addAndGet(1);
@@ -64,12 +65,13 @@ public class clientHandler extends Thread {
             int targetClientIndex=0;//the id of the client that will receive money from another bank
          while (true)
             {
-                     dos.writeUTF("To make a new account, press C."
+                 dos.writeUTF("To make a new account, press C."
                         + "\n To login, press L "
                         + "\n To get information about our bank, press I"
                         + "\n To exit, press E \n");
+                 
                 String userFirstChoice = dis.readUTF();
-                              if (userFirstChoice.equalsIgnoreCase("sending id")){
+                 if (userFirstChoice.equalsIgnoreCase("sending id")){
                         dos.writeUTF("ok");
                         userFirstChoice=dis.readUTF();
                         System.out.println(userFirstChoice);
@@ -102,11 +104,11 @@ public class clientHandler extends Thread {
                         }
                      
                         }
+                  
                       
                 
                 
-
-
+   
                 
                 
                 //------------------------------------------CREATE NEW ACCOUNT---------------------------------------------------
@@ -164,7 +166,7 @@ public class clientHandler extends Thread {
                         while(true){
                               dos.writeUTF("\nWelcome to your account: Full Name: " + Users[current_user_index].full_name +
                             "\n Type details for your account details \nType D to deposit an amount \nType W to withdraw an amount \n"
-                            +"Type TS to transfer money to another account in the same bank\n"+"Type TS+ to transfer money to another account in other bank"+"\nType H to see your transactions history"
+                            +"Type TS to transfer money to another account in the same bank\n"+"Type TS+ to transfer money to another account in other bank"
                                     + "\nPress L to logout\n");
 
                             // to take the choice of the user after log in
@@ -182,35 +184,18 @@ public class clientHandler extends Thread {
 
                                 dos.writeUTF("Enter the Amount to be deposited.");
                                 Number deposited_amount = Float.parseFloat(dis.readUTF());
-
-                                if(deposited_amount.floatValue() > 0) { // no negative numbers 
-                                        Users[current_user_index].balance = Users[current_user_index].balance.floatValue() + deposited_amount.floatValue();
-                                        dos.writeUTF("your new balance is: " + Users[current_user_index].balance + " \n press enter to continue.");
-                                }
-                                else {
-                                        dos.writeUTF("ERROR: You entered a negative number or a zero. \n press enter to continue.");
-                                }
-
+                                Users[current_user_index].balance = Users[current_user_index].balance.floatValue() + deposited_amount.floatValue();
+                                newTransaction(Users[current_user_index].id,"Deposit",deposited_amount);
+                                dos.writeUTF("your new balance is: " + Users[current_user_index].balance + " \n press enter to continue.");
 
                              //-------------------------------------------LOGGED IN ACCOUNT WITHDRAWAL------------------------------------------------------
                             } else if(userFirstChoice.equalsIgnoreCase("W")){
 
-
                                 dos.writeUTF("Enter the Amount to be withdrawn.");
                                 Number withdrawn_amount = Float.parseFloat(dis.readUTF());
-
-                                if(withdrawn_amount.floatValue() > 0) {
-                                    if(withdrawn_amount.floatValue() <= Users[current_user_index].balance.floatValue()){
-                                            Users[current_user_index].balance = Users[current_user_index].balance.floatValue() - withdrawn_amount.floatValue();
-                                            dos.writeUTF("your new balance is: " + Users[current_user_index].balance + " \n press enter to continue.");
-                                    }
-                                    else {
-                                            dos.writeUTF("ERROR: Withdrawn amount is bigger than the current balance. \n press enter to continue.");
-                                    }
-                                }
-                                else {
-                                        dos.writeUTF("ERROR: You entered a negative number or a zero. \n press enter to continue.");
-                                }
+                                Users[current_user_index].balance = Users[current_user_index].balance.floatValue() - withdrawn_amount.floatValue();
+                                newTransaction(Users[current_user_index].id,"Withdraw",withdrawn_amount);
+                                dos.writeUTF("your new balance is: " + Users[current_user_index].balance + " \n press enter to continue.");
                                    
                             //-------------------------------------------LOGGED IN ACCOUNT TRASFER------------------------------------------------------
                            } else if(userFirstChoice.equalsIgnoreCase("TS")){
@@ -231,7 +216,6 @@ public class clientHandler extends Thread {
                                       */
                                       String state=Users[current_user_index].Transfer(idOfSecondUser,amountOfMoney,Users);
                                       newTransaction(Users[current_user_index].id,"Transfer",amountOfMoney);
-                                      
                                       dos.writeUTF(state+" press enter to continue");
                                 }
                                catch (Exception e){
@@ -259,13 +243,13 @@ public class clientHandler extends Thread {
                                        
                                         String response=Users[current_user_index].TramsferToAnotherBank(idOfClient,amount);
                                         newTransaction(Users[current_user_index].id,"Transfer",amount);
-                                    dos.writeUTF(response+"\npress Enter to continue");
+                                        dos.writeUTF(response+"\npress Enter to continue");
                                        }
                                        catch (Exception e) {
                                        dos.writeUTF("something went wrong\npress Enter to continue");
                                        }
                                        }
-                            //-------------------------------------------LOGGED IN ACCOUNT TRANSACTION HISTORY------------------------------------------------------
+                                  //-------------------------------------------LOGGED IN ACCOUNT TRANSACTION HISTORY------------------------------------------------------
                              else if(userFirstChoice.equalsIgnoreCase("H")){
                                  boolean flag = false;
                                  String trs= new String("");
@@ -340,4 +324,3 @@ public class clientHandler extends Thread {
 
     
 }
-

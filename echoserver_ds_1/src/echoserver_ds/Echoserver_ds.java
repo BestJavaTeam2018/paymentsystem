@@ -40,7 +40,7 @@ public class Echoserver_ds {
             AtomicInteger next_transaction_index=new AtomicInteger(0);
             
             //1.Listen to any client that may arrive
-            ServerSocket s = new ServerSocket(1234);
+            ServerSocket s = new ServerSocket(5678);
 
             while (true) //because the server is always waiting for a new client
             {
