@@ -132,16 +132,32 @@ public class clientHandler extends Thread {
 
                                 dos.writeUTF("Enter the Amount to be deposited.");
                                 Number deposited_amount = Float.parseFloat(dis.readUTF());
-                                Users[current_user_index].balance = Users[current_user_index].balance.floatValue() + deposited_amount.floatValue();
-                                dos.writeUTF("your new balance is: " + Users[current_user_index].balance + " \n press enter to continue.");
+                                if(deposited_amount.floatValue() > 0) { // no negative numbers 
+                                        Users[current_user_index].balance = Users[current_user_index].balance.floatValue() + deposited_amount.floatValue();
+                                        dos.writeUTF("your new balance is: " + Users[current_user_index].balance + " \n press enter to continue.");
+                                }
+                                else {
+                                        dos.writeUTF("ERROR: You entered a negative number or a zero. \n press enter to continue.");
+                                }
 
                              //-------------------------------------------LOGGED IN ACCOUNT WITHDRAWAL------------------------------------------------------
                             } else if(userFirstChoice.equalsIgnoreCase("W")){
 
+
                                 dos.writeUTF("Enter the Amount to be withdrawn.");
                                 Number withdrawn_amount = Float.parseFloat(dis.readUTF());
-                                Users[current_user_index].balance = Users[current_user_index].balance.floatValue() - withdrawn_amount.floatValue();
-                                dos.writeUTF("your new balance is: " + Users[current_user_index].balance + " \n press enter to continue.");
+                                if(withdrawn_amount.floatValue() > 0) {
+                                    if(withdrawn_amount.floatValue() <= Users[current_user_index].balance.floatValue()){
+                                            Users[current_user_index].balance = Users[current_user_index].balance.floatValue() - withdrawn_amount.floatValue();
+                                            dos.writeUTF("your new balance is: " + Users[current_user_index].balance + " \n press enter to continue.");
+                                    }
+                                    else {
+                                            dos.writeUTF("ERROR: Withdrawn amount is bigger than the current balance. \n press enter to continue.");
+                                    }
+                                }
+                                else {
+                                        dos.writeUTF("ERROR: You entered a negative number or a zero. \n press enter to continue.");
+                                }
                                    
                             //-------------------------------------------LOGGED IN ACCOUNT TRASFER------------------------------------------------------
                            } else if(userFirstChoice.equalsIgnoreCase("TS")){
