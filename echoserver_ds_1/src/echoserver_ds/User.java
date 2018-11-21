@@ -19,18 +19,22 @@ public class User {
     Number balance;
     String bank;
         
-    
-    //constructor
-    User(String Full_Name, String Password, Number Initial_Balance ){
+        //constructor
+    User(String Full_Name, String Password, Number Initial_Balance,String ID){      //Torres: lil edit for ID
         full_name=Full_Name;
         password=Password;
         balance=Initial_Balance;
         this.bank=bank;
-        
-        //creating a random id
-        Random rand = new Random();
-        id= Integer.toString(rand.nextInt(10000) + 1);
+        if(ID==null)
+        {
+            //creating a random id
+            Random rand = new Random();
+            id= Integer.toString(rand.nextInt(10000) + 1);
+        }
+        else
+            id= ID;
     }
+    
     
     //user can transfer money to another account in the same bank
     public String Transfer(String idOfSecondUser,Number amountOfMoney,User[] users){
