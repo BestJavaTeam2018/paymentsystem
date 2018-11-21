@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.io.*;
 
 /**
  *
@@ -31,6 +32,9 @@ public class clientHandler extends Thread {
     int current_user_index;
     AtomicInteger next_transaction_index;
 
+    File file = new File("C:\\Users\\Leonard\\Desktop\\MyFile.txt");    //Torres
+    boolean append_to_file= true;     
+
      public clientHandler(Socket c,User[] Users,Transaction[] Transactions,AtomicInteger next_empty_index,Integer current_user_index,AtomicInteger next_transaction_index) {
         this.c = c;
         this.Users=Users;
@@ -43,29 +47,69 @@ public class clientHandler extends Thread {
     
     
     public synchronized void newUser(String full_name, String password, int initial_balance){
-         User new_user=new User(full_name, password, initial_balance);
+         User new_user=new User(full_name, password, initial_balance,null);
          Users[next_empty_index.get()]=new_user;
          //addAndGet is a function to add new value to the original value of the atomic variable
          next_empty_index.addAndGet(1); //to be able to create the next user in the future
          current_user_index=next_empty_index.get()-1;
-    }  
- public synchronized void newTransaction(String User_id,String Type, Number Amount){
+    }
+    public synchronized void existingUser(String full_name, String password, int initial_balance,String ID){    //Torres
+         User new_user=new User(full_name, password, initial_balance,ID);
+         Users[next_empty_index.get()]=new_user;
+         //addAndGet is a function to add new value to the original value of the atomic variable
+         next_empty_index.addAndGet(1); //to be able to create the next user in the future
+         current_user_index=next_empty_index.get()-1;
+    }
+    public synchronized void newTransaction(String User_id,String Type, Number Amount){
     Transaction new_transaction = new Transaction(User_id,Type,Amount);
     transactions[next_transaction_index.get()]=new_transaction ;
     next_transaction_index.addAndGet(1);
-}
+    }
+                                            //Torres//
+    
+    public void writeToFile( String textLine ) throws IOException {
+        FileWriter write = new FileWriter( "C:\\Users\\Leonard\\Desktop\\MyFile.txt" , append_to_file);
+        PrintWriter print_line = new PrintWriter( write );
+        print_line.printf( "%s" + "%n" , textLine);
+        print_line.close();
+    }
+    public void readFromFile() throws IOException{
+        String line=null; 
+        FileReader read = new FileReader("C:\\Users\\Leonard\\Desktop\\MyFile.txt");
+        BufferedReader bRead = new BufferedReader(read);
+        while((line = bRead.readLine()) != null) {
+            if(line.contentEquals("  ID - Pass - Name - Balance"))
+            continue;
+            int FirstDash= line.indexOf('-');
+            int SecondDash= line.indexOf('-',FirstDash + 1);
+            int ThirdDash= line.lastIndexOf('-');
+            // Details are in this order
+            // ID - PW - NAME - BALANCE
+            String full_name= line.substring(SecondDash+2,ThirdDash-1);
+            String password=  line.substring(FirstDash+2,SecondDash-1);
+            String initial_balance_=  line.substring(ThirdDash + 1);
+            String id= line.substring(0,FirstDash-1);
+            float initial_balance = Float.parseFloat(initial_balance_);
+            existingUser(full_name,  password, (int) initial_balance , id);
+        }   
+        bRead.close();         
+    }
+    
   @Override
     public void run() {
         try{
          //3.create socket (I/O) with client
          DataOutputStream dos = new DataOutputStream(c.getOutputStream());
          DataInputStream dis = new DataInputStream(c.getInputStream());
-
-            //4.IO communication with client (main program)
-            int targetClientIndex=0;//the id of the client that will receive money from another bank
+        
+         readFromFile();
+      
+         //4.IO communication with client (main program)
+         int targetClientIndex=0;//the id of the client that will receive money from another bank
          while (true)
             {
-                 dos.writeUTF("To make a new account, press C."
+        
+            dos.writeUTF("To make a new account, press C."
                         + "\n To login, press L "
                         + "\n To get information about our bank, press I"
                         + "\n To exit, press E \n");
@@ -130,6 +174,8 @@ public class clientHandler extends Thread {
                             "\n Password: " + Users[current_user_index].password + "\n Balance: "+ Users[current_user_index].balance + "\n ID: " + Users[current_user_index].id
                             +"\nPress enter to continue\n");
 
+                    writeToFile( Users[current_user_index].id + " - " + Users[current_user_index].password + " - " + Users[current_user_index].full_name + " - "+ Users[current_user_index].balance );
+ 
                     dis.readUTF(); //to absorb the user's enter press
 
                 }
@@ -192,6 +238,31 @@ public class clientHandler extends Thread {
                                 else {
                                         dos.writeUTF("ERROR: You entered a negative number or a zero. \n press enter to continue.");
                                 }
+                                                                                              //Torres//                                
+                                BufferedReader br = new BufferedReader(new FileReader(file));
+                                File tempFile = new File("C:\\Users\\Leonard\\Desktop\\tempfile.txt");
+                                PrintWriter pw = new PrintWriter(new FileWriter(tempFile));
+                                String line=null ;
+                                while ((line = br.readLine()) != null)
+                                {
+                                    if (line.contains(Users[current_user_index].id)) 
+                                    {
+                                       Number newBalance = Users[current_user_index].balance;
+                                       line = line.substring(0,line.lastIndexOf(" ")) + " " + newBalance;
+                                    }
+                                pw.println(line);
+                                pw.flush();
+                                }
+                                pw.close();
+                                br.close();
+                                // Delete the original file
+                                if (!file.delete()) {
+                                    System.out.println("Could not delete file");
+                                    return;
+                                }
+                                // Rename the new file to the filename the original file had.
+                                if (!tempFile.renameTo(file))
+                                    System.out.println("Could not rename file");
 
                              //-------------------------------------------LOGGED IN ACCOUNT WITHDRAWAL------------------------------------------------------
                             } else if(userFirstChoice.equalsIgnoreCase("W")){
@@ -211,6 +282,34 @@ public class clientHandler extends Thread {
                                 else {
                                         dos.writeUTF("ERROR: You entered a negative number or a zero. \n press enter to continue.");
                                 }
+                                                                                                                        //Torres//                                
+                                BufferedReader br = new BufferedReader(new FileReader(file));
+                                File tempFile = new File("C:\\Users\\Leonard\\Desktop\\tempfile.txt");
+                                PrintWriter pw = new PrintWriter(new FileWriter(tempFile));
+                                String line=null ;
+                                while ((line = br.readLine()) != null)
+                                {
+                                    if (line.contains(Users[current_user_index].id)) 
+                                    {
+                                       Number newBalance = Users[current_user_index].balance;
+                                       line = line.substring(0,line.lastIndexOf(" ")) + " " + newBalance;
+                                    }
+                                pw.println(line);
+                                pw.flush();
+                                }
+                                pw.close();
+                                br.close();
+                                // Delete the original file
+                                if (!file.delete()) {
+                                    System.out.println("Could not delete file");
+                                    return;
+                                }
+                                // Rename the new file to the filename the original file had.
+                                if (!tempFile.renameTo(file))
+                                    System.out.println("Could not rename file");
+
+                                   
+
                                    
                             //-------------------------------------------LOGGED IN ACCOUNT TRASFER------------------------------------------------------
                            } else if(userFirstChoice.equalsIgnoreCase("TS")){
@@ -221,7 +320,7 @@ public class clientHandler extends Thread {
 
                                } catch (Exception e){
                                   dos.writeUTF("the id you entered is incorrect");
-                              }
+                               }
                                
                                try{
                                       dos.writeUTF("please write the amount of money you want to transfer");
@@ -232,6 +331,47 @@ public class clientHandler extends Thread {
                                       String state=Users[current_user_index].Transfer(idOfSecondUser,amountOfMoney,Users);
                                       newTransaction(Users[current_user_index].id,"Transfer",amountOfMoney);
                                       dos.writeUTF(state+" press enter to continue");
+                                      
+                                      
+                                                                //Torres//                                
+                                        int numb=get_number_of_elements(Users);
+                                        int receiver = 0;
+                                        for (int i=0;i<numb; i++){
+                                               if(Users[i].id.equals(idOfSecondUser)){
+                                                   receiver = i;
+                                               }
+                                        }
+                                        BufferedReader br = new BufferedReader(new FileReader(file));
+                                        File tempFile = new File("C:\\Users\\Leonard\\Desktop\\tempfile.txt");
+                                        PrintWriter pw = new PrintWriter(new FileWriter(tempFile));
+                                        String line=null ;
+                                        while ((line = br.readLine()) != null)
+                                        {
+                                            if (line.contains(Users[current_user_index].id)) 
+                                            {
+                                               Number newBalance = Users[current_user_index].balance;
+                                               line = line.substring(0,line.lastIndexOf(" ")) + " " + newBalance;
+                                            }
+                                            if (line.contains(Users[receiver].id)) // users[i].id.equals(idOfSecondUser)
+                                            {
+                                               Number newBalance = Users[receiver].balance;//needs editing // second user balance
+                                               line = line.substring(0,line.lastIndexOf(" ")) + " " + newBalance;
+                                            }
+                                        pw.println(line);
+                                        pw.flush();
+                                        }
+                                        pw.close();
+                                        br.close();
+                                        // Delete the original file
+                                        if (!file.delete()) {
+                                            System.out.println("Could not delete file");
+                                            return;
+                                            }
+                                        // Rename the new file to the filename the original file had.
+                                        if (!tempFile.renameTo(file))
+                                            System.out.println("Could not rename file");
+        
+                               
                                 }
                                catch (Exception e){
                                       dos.writeUTF("the amount you entered is incorrect , press enter to continue");
@@ -311,7 +451,7 @@ public class clientHandler extends Thread {
                         String users="";
                         for (int i = 0; i < number_of_users; i++){
                             users=users+"\n"+Users[i].full_name+"\n"
-                                    + Users[i].id;
+                                    + Users[i].id + "\n";
                         }
                         dos.writeUTF(users+"\n \n Press enter to continue");
                     }
