@@ -32,7 +32,7 @@ public class clientHandler extends Thread {
     int current_user_index;
     AtomicInteger next_transaction_index;
 
-    File file = new File("C:\\Users\\Leonard\\Desktop\\MyFile.txt");    //Torres
+    File file = new File("C:\\Users\\ahmed\\Desktop\\Bank1.txt");    //Torres
     boolean append_to_file= true;     
 
      public clientHandler(Socket c,User[] Users,Transaction[] Transactions,AtomicInteger next_empty_index,Integer current_user_index,AtomicInteger next_transaction_index) {
@@ -68,14 +68,14 @@ public class clientHandler extends Thread {
                                             //Torres//
     
     public void writeToFile( String textLine ) throws IOException {
-        FileWriter write = new FileWriter( "C:\\Users\\Leonard\\Desktop\\MyFile.txt" , append_to_file);
+        FileWriter write = new FileWriter( "C:\\Users\\ahmed\\Desktop\\Bank1.txt" , append_to_file);
         PrintWriter print_line = new PrintWriter( write );
         print_line.printf( "%s" + "%n" , textLine);
         print_line.close();
     }
     public void readFromFile() throws IOException{
         String line=null; 
-        FileReader read = new FileReader("C:\\Users\\Leonard\\Desktop\\MyFile.txt");
+        FileReader read = new FileReader("C:\\Users\\ahmed\\Desktop\\Bank1.txt");
         BufferedReader bRead = new BufferedReader(read);
         while((line = bRead.readLine()) != null) {
             if(line.contentEquals("  ID - Pass - Name - Balance"))
@@ -137,8 +137,41 @@ public class clientHandler extends Thread {
                                   System.out.println(userFirstChoice);
                                   Number receivedMoney= Float.parseFloat(userFirstChoice);
              Users[targetClientIndex].balance = Users[targetClientIndex].balance.floatValue() + receivedMoney.floatValue();
+             
+             
                         dos.writeUTF("done");
                                   
+                        
+                        //Torres//
+                                        
+                        BufferedReader br = new BufferedReader(new FileReader(file));
+                        File tempFile = new File("C:\\Users\\ahmed\\Desktop\\tempfile1                       .txt");
+                        PrintWriter pw = new PrintWriter(new FileWriter(tempFile));
+                        String line=null ;
+                        while ((line = br.readLine()) != null)
+                        {
+                            if (line.contains(Users[targetClientIndex].id)) 
+                            {
+                               Number newBalance = Users[targetClientIndex].balance;
+                               line = line.substring(0,line.lastIndexOf(" ")) + " " + newBalance;
+                            }
+
+                        pw.println(line);
+                        pw.flush();
+                        }
+                        pw.close();
+                        br.close();
+                        // Delete the original file
+                        if (!file.delete()) {
+                            System.out.println("Could not delete file");
+                            return;
+                            }
+                        // Rename the new file to the filename the original file had.
+                        if (!tempFile.renameTo(file))
+                            System.out.println("Could not rename file");
+                        
+                        
+                        
                               }
                                 
                                 
@@ -240,7 +273,7 @@ public class clientHandler extends Thread {
                                 }
                                                                                               //Torres//                                
                                 BufferedReader br = new BufferedReader(new FileReader(file));
-                                File tempFile = new File("C:\\Users\\Leonard\\Desktop\\tempfile.txt");
+                                File tempFile = new File("C:\\Users\\ahmed\\Desktop\\tempfile.txt");
                                 PrintWriter pw = new PrintWriter(new FileWriter(tempFile));
                                 String line=null ;
                                 while ((line = br.readLine()) != null)
@@ -284,7 +317,7 @@ public class clientHandler extends Thread {
                                 }
                                                                                                                         //Torres//                                
                                 BufferedReader br = new BufferedReader(new FileReader(file));
-                                File tempFile = new File("C:\\Users\\Leonard\\Desktop\\tempfile.txt");
+                                File tempFile = new File("C:\\Users\\ahmed\\Desktop\\tempfile.txt");
                                 PrintWriter pw = new PrintWriter(new FileWriter(tempFile));
                                 String line=null ;
                                 while ((line = br.readLine()) != null)
@@ -342,7 +375,7 @@ public class clientHandler extends Thread {
                                                }
                                         }
                                         BufferedReader br = new BufferedReader(new FileReader(file));
-                                        File tempFile = new File("C:\\Users\\Leonard\\Desktop\\tempfile.txt");
+                                        File tempFile = new File("C:\\Users\\ahmed\\Desktop\\tempfile.txt");
                                         PrintWriter pw = new PrintWriter(new FileWriter(tempFile));
                                         String line=null ;
                                         while ((line = br.readLine()) != null)
@@ -397,8 +430,42 @@ public class clientHandler extends Thread {
                                        float  amount =Float.parseFloat(dis.readUTF());
                                        
                                         String response=Users[current_user_index].TramsferToAnotherBank(idOfClient,amount);
+                                        
+                                        
+                                        
                                         newTransaction(Users[current_user_index].id,"Transfer",amount);
                                         dos.writeUTF(response+"\npress Enter to continue");
+                                        
+                                        //Torres//
+                                        
+                                        BufferedReader br = new BufferedReader(new FileReader(file));
+                                        File tempFile = new File("C:\\Users\\ahmed\\Desktop\\tempfile.txt");
+                                        PrintWriter pw = new PrintWriter(new FileWriter(tempFile));
+                                        String line=null ;
+                                        while ((line = br.readLine()) != null)
+                                        {
+                                            if (line.contains(Users[current_user_index].id)) 
+                                            {
+                                               Number newBalance = Users[current_user_index].balance;
+                                               line = line.substring(0,line.lastIndexOf(" ")) + " " + newBalance;
+                                            }
+                                            
+                                        pw.println(line);
+                                        pw.flush();
+                                        }
+                                        pw.close();
+                                        br.close();
+                                        // Delete the original file
+                                        if (!file.delete()) {
+                                            System.out.println("Could not delete file");
+                                            return;
+                                            }
+                                        // Rename the new file to the filename the original file had.
+                                        if (!tempFile.renameTo(file))
+                                            System.out.println("Could not rename file");
+                                        
+                                        
+                                        
                                        }
                                        catch (Exception e) {
                                        dos.writeUTF("something went wrong\npress Enter to continue");
@@ -472,6 +539,7 @@ public class clientHandler extends Thread {
         }
         catch(IOException ex)
         {
+            System.out.println(ex);
             System.out.println("Client socket closed");
         }
         

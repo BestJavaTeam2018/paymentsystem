@@ -104,6 +104,7 @@ public class User {
                     if(servermsg.equalsIgnoreCase("done"))//transaction has been successfully completed
                     {
                         balance=balance.floatValue()- amount.floatValue();//update current user balance
+                        
                         s.close();
                         return "Bank response : Transaction success\n your new Balance is "+balance+"\n";
                     }
