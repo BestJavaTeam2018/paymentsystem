@@ -32,7 +32,7 @@ public class clientHandler extends Thread {
     int current_user_index;
     AtomicInteger next_transaction_index;
     
-    File file = new File("C:\\Users\\ahmed\\Desktop\\Bank0.txt");    //Torres
+    File file = new File("C:\\db\\Bank0.txt");    //Torres
     boolean append_to_file= true; 
 
     public clientHandler(Socket c,User[] Users,Transaction[] Transactions,AtomicInteger next_empty_index,Integer current_user_index,AtomicInteger next_transaction_index) {
@@ -68,14 +68,14 @@ public class clientHandler extends Thread {
 }
     
     public void writeToFile( String textLine ) throws IOException {
-        FileWriter write = new FileWriter( "C:\\Users\\ahmed\\Desktop\\Bank0.txt" , append_to_file);
+        FileWriter write = new FileWriter( "C:\\db\\Bank0.txt" , append_to_file);
         PrintWriter print_line = new PrintWriter( write );
         print_line.printf( "%s" + "%n" , textLine);
         print_line.close();
     }
     public void readFromFile() throws IOException{
         String line=null; 
-        FileReader read = new FileReader("C:\\Users\\ahmed\\Desktop\\Bank0.txt");
+        FileReader read = new FileReader("C:\\db\\Bank0.txt");
         BufferedReader bRead = new BufferedReader(read);
         while((line = bRead.readLine()) != null) {
             if(line.contentEquals("  ID - Pass - Name - Balance"))
@@ -143,7 +143,7 @@ public class clientHandler extends Thread {
                         //Torres//
                                         
                         BufferedReader br = new BufferedReader(new FileReader(file));
-                        File tempFile = new File("C:\\Users\\ahmed\\Desktop\\tempfile0.txt");
+                        File tempFile = new File("C:\\db\\tempfile0.txt");
                         PrintWriter pw = new PrintWriter(new FileWriter(tempFile));
                         String line=null ;
                         while ((line = br.readLine()) != null)
@@ -271,7 +271,7 @@ public class clientHandler extends Thread {
                                 
                                                                                                        //Torres//                                
                                 BufferedReader br = new BufferedReader(new FileReader(file));
-                                File tempFile = new File("C:\\Users\\ahmed\\Desktop\\tempfile.txt");
+                                File tempFile = new File("C:\\db\\tempfile.txt");
                                 PrintWriter pw = new PrintWriter(new FileWriter(tempFile));
                                 String line=null ;
                                 while ((line = br.readLine()) != null)
@@ -318,7 +318,7 @@ public class clientHandler extends Thread {
                                 
                                                                   //Torres//                                
                                 BufferedReader br = new BufferedReader(new FileReader(file));
-                                File tempFile = new File("C:\\Users\\ahmed\\Desktop\\tempfile.txt");
+                                File tempFile = new File("C:\\db\\tempfile.txt");
                                 PrintWriter pw = new PrintWriter(new FileWriter(tempFile));
                                 String line=null ;
                                 while ((line = br.readLine()) != null)
@@ -374,7 +374,7 @@ public class clientHandler extends Thread {
                                                }
                                         }
                                         BufferedReader br = new BufferedReader(new FileReader(file));
-                                        File tempFile = new File("C:\\Users\\ahmed\\Desktop\\tempfile.txt");
+                                        File tempFile = new File("C:\\db\\tempfile.txt");
                                         PrintWriter pw = new PrintWriter(new FileWriter(tempFile));
                                         String line=null ;
                                         while ((line = br.readLine()) != null)
@@ -436,7 +436,7 @@ public class clientHandler extends Thread {
                                         //Torres//
                                         
                                         BufferedReader br = new BufferedReader(new FileReader(file));
-                                        File tempFile = new File("C:\\Users\\ahmed\\Desktop\\tempfile.txt");
+                                        File tempFile = new File("C:\\db\\tempfile.txt");
                                         PrintWriter pw = new PrintWriter(new FileWriter(tempFile));
                                         String line=null ;
                                         while ((line = br.readLine()) != null)
